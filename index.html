@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EPCOT Holiday Food Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .prose-invert {
+        --tw-prose-body: #F3E5AB;
+        --tw-prose-headings: #FFD700;
+        --tw-prose-lead: #D1C4A8;
+        --tw-prose-links: #FFD700;
+        --tw-prose-bold: #F3E5AB;
+        --tw-prose-counters: #D1C4A8;
+        --tw-prose-bullets: #B91C1C;
+        --tw-prose-hr: #B91C1C;
+        --tw-prose-quotes: #FFD700;
+        --tw-prose-quote-borders: #B91C1C;
+        --tw-prose-captions: #D1C4A8;
+        --tw-prose-code: #F3E5AB;
+        --tw-prose-pre-code: #D1C4A8;
+        --tw-prose-pre-bg: #450a0a;
+        --tw-prose-th-borders: #B91C1C;
+        --tw-prose-td-borders: #B91C1C;
+      }
+      @keyframes snowfall {
+        0% { transform: translateY(-10vh); }
+        100% { transform: translateY(110vh); }
+      }
+      @keyframes twinkle {
+        0%, 100% { opacity: 0; }
+        50% { opacity: 1; }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.1",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body class="bg-[#013220] text-[#F3E5AB]">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
