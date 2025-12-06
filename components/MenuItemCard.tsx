@@ -11,6 +11,20 @@ interface MenuItemCardProps {
 
 const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, isFavorite, onToggleFavorite }) => {
   const { nutritionalEstimates: nutrition } = item;
+  const netCarbs = nutrition.carbohydrates_g - nutrition.fiber_g;
+
+  // Color coding for carbs: green (low) < 20g, yellow (medium) 20-40g, red (high) > 40g
+  const getCarbColor = (carbs: number) => {
+    if (carbs < 20) return 'bg-green-700 border-green-500';
+    if (carbs <= 40) return 'bg-yellow-700 border-yellow-500';
+    return 'bg-[#B91C1C] border-[#FFD700]/50';
+  };
+
+  const getCarbLabel = (carbs: number) => {
+    if (carbs < 20) return 'Low';
+    if (carbs <= 40) return 'Medium';
+    return 'High';
+  };
 
   return (
     <div className="bg-[#024933]/50 rounded-lg p-4 flex flex-col h-full border border-[#B91C1C] hover:border-[#FFD700] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-400/20">
@@ -58,9 +72,15 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, isFavorite, onToggleF
       <div>
         <h5 className="text-sm font-semibold text-[#D1C4A8] mb-2">Nutritional Estimates</h5>
         <div className="bg-[#013220]/70 rounded-md p-3">
-          <div className="text-center mb-3 rounded-md bg-[#B91C1C] p-2 shadow-lg border-2 border-[#FFD700]/50">
-              <div className="text-sm font-bold text-white uppercase tracking-wider">Carbohydrates</div>
-              <div className="text-3xl font-extrabold text-white">{nutrition.carbohydrates_g}g</div>
+          <div className={`text-center mb-3 rounded-md p-2 shadow-lg border-2 ${getCarbColor(netCarbs)}`}>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs font-semibold text-white/80 uppercase tracking-wider">Total Carbs</span>
+                <span className="text-xs font-bold text-white px-2 py-0.5 rounded bg-black/20">{getCarbLabel(netCarbs)}</span>
+              </div>
+              <div className="text-2xl font-extrabold text-white">{nutrition.carbohydrates_g}g</div>
+              <div className="text-sm text-white/90 mt-1 border-t border-white/20 pt-1">
+                <span className="font-semibold">Net Carbs:</span> {netCarbs}g
+              </div>
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-[#F3E5AB]">
             <div className="flex justify-between"><span>Calories:</span> <span className="font-medium">{nutrition.calories}</span></div>

@@ -36,6 +36,22 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     setFilters({ ...filters, [filterName]: !filters[filterName] });
   };
 
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setFilters({
+      plantBased: false,
+      cookieStroll: false,
+      glutenFree: false,
+      dairyFree: false,
+      showFavorites: false,
+    });
+    setSortBy('name');
+  };
+
+  const hasActiveFilters = searchTerm !== '' ||
+    filters.plantBased || filters.cookieStroll || filters.glutenFree ||
+    filters.dairyFree || filters.showFavorites || sortBy !== 'name';
+
   const activeBtnClasses = 'bg-[#B91C1C] text-white font-bold';
   const inactiveBtnClasses = 'bg-[#024933] text-[#F3E5AB] hover:bg-[#035F43]';
 
@@ -119,7 +135,18 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           </div>
         </div>
       </div>
-      <p className="text-center text-sm text-[#A89C8C] mt-3">Showing {itemCount} matching items.</p>
+      <div className="flex justify-center items-center gap-4 mt-3">
+        <p className="text-sm text-[#A89C8C]">Showing {itemCount} matching items.</p>
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            className="text-sm text-[#FFD700] hover:text-[#FBBF24] underline underline-offset-2 transition-colors"
+            aria-label="Clear all filters and reset search"
+          >
+            Clear All
+          </button>
+        )}
+      </div>
     </div>
   );
 };

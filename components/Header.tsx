@@ -22,7 +22,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="relative text-center p-4 md:p-8 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">{stars}</div>
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">{stars}</div>
       <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#B91C1C] to-[#FFD700] mb-2">
         EPCOT Festival of the Holidays
       </h1>

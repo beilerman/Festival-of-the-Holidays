@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { kitchenData } from './data/kitchenData';
 import { Kitchen } from './types';
 import Header from './components/Header';
@@ -25,9 +25,56 @@ const Snowfall: React.FC = () => {
         });
     }, []);
 
-    return <div className="fixed inset-0 pointer-events-none z-0">{snowflakes}</div>;
+    return <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">{snowflakes}</div>;
 };
 
+const BackToTop: React.FC = () => {
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const toggleVisibility = () => {
+            setIsVisible(window.scrollY > 500);
+        };
+        window.addEventListener('scroll', toggleVisibility);
+        return () => window.removeEventListener('scroll', toggleVisibility);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    if (!isVisible) return null;
+
+    return (
+        <button
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 bg-[#B91C1C] hover:bg-[#991B1B] text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+            aria-label="Back to top"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+        </button>
+    );
+};
+
+const Footer: React.FC = () => {
+    return (
+        <footer className="relative z-10 mt-12 py-8 border-t border-[#B91C1C]/50">
+            <div className="container mx-auto px-4 text-center">
+                <p className="text-[#D1C4A8] text-sm mb-2">
+                    EPCOT Festival of the Holidays - A Diabetic's Nutritional Guide
+                </p>
+                <p className="text-[#A89C8C] text-xs">
+                    All nutritional values are estimates. This is not medical advice. Consult your healthcare provider.
+                </p>
+                <p className="text-[#A89C8C] text-xs mt-2">
+                    &copy; {new Date().getFullYear()} | Not affiliated with Walt Disney World
+                </p>
+            </div>
+        </footer>
+    );
+};
 
 const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,7 +169,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen font-sans">
         <Snowfall />
-        <main className="container mx-auto px-4 py-8 relative z-10">
+        <main id="main-content" className="container mx-auto px-4 py-8 relative z-10">
             <Header />
             <GeminiPlanner />
             <FilterControls
@@ -154,6 +201,8 @@ const App: React.FC = () => {
                 </div>
             )}
         </main>
+        <Footer />
+        <BackToTop />
     </div>
   );
 };
