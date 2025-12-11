@@ -24,3 +24,5 @@ export interface Kitchen {
   location: string;
   menuItems: MenuItem[];
 }
+
+export type SortOption = 'name' | 'location' | 'carbs_low_high' | 'carbs_high_low';

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { kitchenData } from './data/kitchenData';
-import { Kitchen } from './types';
+import { Kitchen, MenuItem, SortOption } from './types';
 import Header from './components/Header';
 import KitchenCard from './components/KitchenCard';
 import FilterControls from './components/FilterControls';
@@ -8,13 +8,13 @@ import GeminiPlanner from './components/GeminiPlanner';
 
 const Snowfall: React.FC = () => {
     const snowflakes = useMemo(() => {
-        const flakeCount = 100;
+        const flakeCount = 50;
         return Array.from({ length: flakeCount }).map((_, i) => {
             const style = {
                 left: `${Math.random() * 100}%`,
-                opacity: Math.random(),
-                width: `${Math.random() * 4 + 1}px`,
-                height: `${Math.random() * 4 + 1}px`,
+                opacity: Math.random() * 0.6 + 0.2,
+                width: `${Math.random() * 3 + 1}px`,
+                height: `${Math.random() * 3 + 1}px`,
                 animationName: 'snowfall',
                 animationDuration: `${Math.random() * 10 + 5}s`,
                 animationDelay: `${Math.random() * 10}s`,
@@ -38,7 +38,7 @@ const App: React.FC = () => {
     dairyFree: false,
     showFavorites: false,
   });
-  const [sortBy, setSortBy] = useState('name'); // 'name', 'location', 'carbs_low_high', 'carbs_high_low'
+  const [sortBy, setSortBy] = useState<SortOption>('name');
 
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
@@ -58,6 +58,22 @@ const App: React.FC = () => {
     }
   }, [favorites]);
 
+  const favoritesSet = useMemo(() => new Set(favorites), [favorites]);
+
+  const sortComparator = useMemo(() => {
+    if (sortBy === 'carbs_low_high') {
+      return (a: MenuItem, b: MenuItem) =>
+        a.nutritionalEstimates.carbohydrates_g - b.nutritionalEstimates.carbohydrates_g;
+    }
+
+    if (sortBy === 'carbs_high_low') {
+      return (a: MenuItem, b: MenuItem) =>
+        b.nutritionalEstimates.carbohydrates_g - a.nutritionalEstimates.carbohydrates_g;
+    }
+
+    return (a: MenuItem, b: MenuItem) => a.itemName.localeCompare(b.itemName);
+  }, [sortBy]);
+
   const toggleFavorite = (itemName: string) => {
     setFavorites(prevFavorites => {
       if (prevFavorites.includes(itemName)) {
@@ -69,91 +85,94 @@ const App: React.FC = () => {
   };
 
   const { filteredKitchens, totalItemCount } = useMemo(() => {
-    let kitchens: Kitchen[] = JSON.parse(JSON.stringify(kitchenData)); // Deep copy to avoid mutation
     let itemCount = 0;
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
 
-    let processedKitchens = kitchens
-      .map((kitchen) => {
-        const kitchenMatchesSearch =
-            kitchen.kitchenName.toLowerCase().includes(lowerCaseSearchTerm) ||
-            kitchen.location.toLowerCase().includes(lowerCaseSearchTerm);
+    const processedKitchens = kitchenData.reduce<Kitchen[]>((result, kitchen) => {
+      const kitchenMatchesSearch =
+        kitchen.kitchenName.toLowerCase().includes(lowerCaseSearchTerm) ||
+        kitchen.location.toLowerCase().includes(lowerCaseSearchTerm);
 
-        const filteredItems = kitchen.menuItems.filter((item) => {
-          const itemMatchesSearch =
-            item.itemName.toLowerCase().includes(lowerCaseSearchTerm) ||
-            item.description?.toLowerCase().includes(lowerCaseSearchTerm);
+      const filteredItems = kitchen.menuItems.filter((item) => {
+        const itemMatchesSearch =
+          item.itemName.toLowerCase().includes(lowerCaseSearchTerm) ||
+          item.description?.toLowerCase().includes(lowerCaseSearchTerm);
 
-          const matchesSearch = searchTerm === '' || kitchenMatchesSearch || itemMatchesSearch;
-          
-          const matchesPlantBased = !filters.plantBased || item.plantBased;
-          const matchesCookieStroll = !filters.cookieStroll || item.cookieStroll;
-          const matchesGlutenFree = !filters.glutenFree || item.glutenFree;
-          const matchesDairyFree = !filters.dairyFree || item.dairyFree;
-          const matchesFavorites = !filters.showFavorites || favorites.includes(item.itemName);
+        const matchesSearch = lowerCaseSearchTerm === '' || kitchenMatchesSearch || itemMatchesSearch;
 
-          return matchesSearch && matchesPlantBased && matchesCookieStroll && matchesGlutenFree && matchesDairyFree && matchesFavorites;
-        });
-        return { ...kitchen, menuItems: filteredItems };
-      })
-      .filter((kitchen) => kitchen.menuItems.length > 0);
+        const matchesPlantBased = !filters.plantBased || item.plantBased;
+        const matchesCookieStroll = !filters.cookieStroll || item.cookieStroll;
+        const matchesGlutenFree = !filters.glutenFree || item.glutenFree;
+        const matchesDairyFree = !filters.dairyFree || item.dairyFree;
+        const matchesFavorites = !filters.showFavorites || favoritesSet.has(item.itemName);
 
-    // Sort items within each kitchen first
-    processedKitchens.forEach((kitchen) => {
-      if (sortBy === 'carbs_low_high') {
-        kitchen.menuItems.sort((a, b) => a.nutritionalEstimates.carbohydrates_g - b.nutritionalEstimates.carbohydrates_g);
-      } else if (sortBy === 'carbs_high_low') {
-        kitchen.menuItems.sort((a, b) => b.nutritionalEstimates.carbohydrates_g - a.nutritionalEstimates.carbohydrates_g);
-      } else { // 'name' or 'location' - default item sort to name
-         kitchen.menuItems.sort((a, b) => a.itemName.localeCompare(b.itemName));
+        return (
+          matchesSearch &&
+          matchesPlantBased &&
+          matchesCookieStroll &&
+          matchesGlutenFree &&
+          matchesDairyFree &&
+          matchesFavorites
+        );
+      });
+
+      const sortedItems = filteredItems.length > 1 ? [...filteredItems].sort(sortComparator) : filteredItems;
+
+      if (sortedItems.length > 0) {
+        itemCount += sortedItems.length;
+        result.push({ ...kitchen, menuItems: sortedItems });
       }
-      itemCount += kitchen.menuItems.length;
-    });
 
-    // Sort the kitchens themselves if sorting by location
+      return result;
+    }, []);
+
     if (sortBy === 'location') {
-        processedKitchens.sort((a, b) => a.location.localeCompare(b.location));
+      processedKitchens.sort((a, b) => a.location.localeCompare(b.location));
     }
 
-
     return { filteredKitchens: processedKitchens, totalItemCount: itemCount };
-  }, [searchTerm, filters, sortBy, favorites]);
+  }, [searchTerm, filters, sortBy, sortComparator, favoritesSet]);
 
   return (
-    <div className="min-h-screen font-sans">
-        <Snowfall />
-        <main className="container mx-auto px-4 py-8 relative z-10">
-            <Header />
-            <GeminiPlanner />
-            <FilterControls
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filters={filters}
-                setFilters={setFilters}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                itemCount={totalItemCount}
-            />
-            
-            {filteredKitchens.length > 0 ? (
-                <div>
-                    {filteredKitchens.map((kitchen) => (
-                        <KitchenCard 
-                          key={kitchen.kitchenName} 
-                          kitchen={kitchen} 
-                          favorites={favorites}
-                          onToggleFavorite={toggleFavorite}
-                        />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-16">
-                    <h3 className="text-2xl font-semibold text-[#F3E5AB]">No Matching Items Found</h3>
-                    <p className="text-[#A89C8C] mt-2">Try adjusting your search or filter criteria.</p>
+    <div className="min-h-screen font-sans bg-[#0B241B] text-white">
+      <Snowfall />
+      <main className="container mx-auto px-4 py-8 relative z-10 space-y-6">
+        <Header />
 
-                </div>
-            )}
-        </main>
+        <div className="grid lg:grid-cols-[320px,1fr] gap-6 items-start">
+          <div className="space-y-4 lg:sticky lg:top-6">
+            <FilterControls
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filters={filters}
+              setFilters={setFilters}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              itemCount={totalItemCount}
+            />
+            <GeminiPlanner />
+          </div>
+
+          {filteredKitchens.length > 0 ? (
+            <div className="space-y-4">
+              {filteredKitchens.map((kitchen) => (
+                <KitchenCard
+                  key={kitchen.kitchenName}
+                  kitchen={kitchen}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 lg:col-span-2">
+              <h3 className="text-2xl font-semibold text-[#F3E5AB]">No Matching Items Found</h3>
+              <p className="text-[#A89C8C] mt-2">Try adjusting your search or filter criteria.</p>
+
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
