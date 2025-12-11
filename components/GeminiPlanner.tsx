@@ -29,14 +29,14 @@ const GeminiPlanner: React.FC = () => {
   };
 
   return (
-    <div className="my-8 p-6 bg-[#024933]/50 border border-[#B91C1C] rounded-xl shadow-2xl">
+    <div className="my-4 p-6 bg-[#0F2D22] border border-[#1F4E38] rounded-2xl shadow-lg space-y-4">
       <div className="flex items-center mb-4">
         <span className="text-4xl mr-4">✨</span>
         <div>
-          <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FBBF24]">
+          <h3 className="text-2xl font-semibold text-white">
             AI Meal Planner
           </h3>
-          <p className="text-[#D1C4A8]">
+          <p className="text-[#9CBBA7]">
             Let Gemini help you! Describe your meal goals or carb budget below.
           </p>
         </div>
@@ -47,12 +47,12 @@ const GeminiPlanner: React.FC = () => {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="e.g., 'Find me a full meal (entrée and dessert) for under 70g of carbs.' or 'What are the three lowest carb savory items?'"
-          className="w-full h-24 p-3 bg-[#013220] border border-[#B91C1C] rounded-md text-white placeholder-[#D1C4A8] focus:ring-2 focus:ring-[#FFD700] transition resize-none"
+          className="w-full h-24 p-3 bg-[#0D2A20] border border-[#1F4E38] rounded-lg text-white placeholder-[#9CBBA7] focus:ring-2 focus:ring-[#FBBF24] transition resize-none"
           disabled={isLoading}
         />
         <button
           type="submit"
-          className="w-full flex items-center justify-center bg-[#B91C1C] hover:bg-[#991B1B] disabled:bg-[#B91C1C]/50 disabled:cursor-not-allowed disabled:text-white/70 text-white font-bold py-3 px-4 rounded-md transition-colors"
+          className="w-full flex items-center justify-center bg-[#1B3A2D] hover:bg-[#224634] disabled:bg-[#1B3A2D]/50 disabled:cursor-not-allowed disabled:text-white/70 text-white font-semibold py-3 px-4 rounded-lg border border-[#1F4E38] transition-colors"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -70,13 +70,13 @@ const GeminiPlanner: React.FC = () => {
       </form>
 
       {error && <p className="mt-4 text-center text-[#FBBF24]">{error}</p>}
-      
+
       {result && (
-        <div className="mt-6 p-4 bg-[#013220] rounded-lg border border-[#B91C1C]">
-            <h4 className="text-lg font-semibold text-[#FFD700] mb-2">Here are some ideas for you:</h4>
-            <div 
+        <div className="mt-4 p-4 bg-[#0D2A20] rounded-lg border border-[#1F4E38] space-y-2">
+            <h4 className="text-lg font-semibold text-white">Here are some ideas for you:</h4>
+            <div
                 className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: result.replace(/\n/g, '<br />') }} 
+                dangerouslySetInnerHTML={{ __html: result.replace(/\n/g, '<br />') }}
             />
         </div>
       )}
