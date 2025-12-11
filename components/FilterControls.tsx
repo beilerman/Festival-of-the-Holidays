@@ -1,5 +1,6 @@
 import React from 'react';
 import { LEAF_ICON, COOKIE_ICON, GLUTEN_FREE_ICON, DAIRY_FREE_ICON, FAVORITE_ICON } from '../constants';
+import { SortOption } from '../types';
 
 interface FilterControlsProps {
   searchTerm: string;
@@ -18,8 +19,8 @@ interface FilterControlsProps {
     dairyFree: boolean;
     showFavorites: boolean;
   }) => void;
-  sortBy: string;
-  setSortBy: (sort: string) => void;
+  sortBy: SortOption;
+  setSortBy: (sort: SortOption) => void;
   itemCount: number;
 }
 
@@ -36,91 +37,86 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     setFilters({ ...filters, [filterName]: !filters[filterName] });
   };
 
-  const activeBtnClasses = 'bg-[#B91C1C] text-white font-bold';
-  const inactiveBtnClasses = 'bg-[#024933] text-[#F3E5AB] hover:bg-[#035F43]';
+  const baseChip =
+    'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors';
+  const activeBtnClasses = `${baseChip} border-[#FBBF24] bg-[#1B3A2D] text-white shadow-[0_0_0_1px_#FBBF24]`;
+  const inactiveBtnClasses = `${baseChip} border-[#1F4E38] bg-[#0F2D22] text-[#D1E7D4] hover:border-[#2F7F5D]`;
 
   return (
-    <div className="sticky top-0 z-10 bg-[#013220]/80 backdrop-blur-md p-4 mb-8 rounded-lg border border-[#B91C1C] shadow-md">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-        {/* Search Input */}
-        <div className="md:col-span-1">
+    <section className="sticky top-4 z-10 bg-[#0D2A20]/90 backdrop-blur-md p-6 rounded-2xl border border-[#1F4E38] shadow-lg space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#8BB89F]">Find dishes quickly</p>
+          <p className="text-sm text-[#D1E7D4]">Showing {itemCount} matching items</p>
+        </div>
+        <div className="w-full sm:w-80">
+          <label className="sr-only" htmlFor="search">Search</label>
           <input
+            id="search"
             type="text"
-            placeholder="Search by item, kitchen, or location..."
+            placeholder="Search by item, kitchen, or location"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#024933] border border-[#B91C1C] rounded-md px-4 py-2 text-white placeholder-[#D1C4A8] focus:ring-2 focus:ring-[#FFD700] focus:border-[#FFD700] transition"
+            className="w-full bg-[#0F2D22] border border-[#1F4E38] rounded-lg px-4 py-2.5 text-white placeholder-[#9CBBA7] focus:ring-2 focus:ring-[#FBBF24] focus:border-[#FBBF24] transition"
           />
         </div>
+      </div>
 
-        {/* Filters and Sort */}
-        <div className="md:col-span-2 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center flex-wrap gap-2">
-            <button
-              onClick={() => handleFilterChange('showFavorites')}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
-                filters.showFavorites ? activeBtnClasses : inactiveBtnClasses
-              }`}
-            >
-              {FAVORITE_ICON}
-              <span>Favorites</span>
-            </button>
-            <button
-              onClick={() => handleFilterChange('plantBased')}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
-                filters.plantBased ? activeBtnClasses : inactiveBtnClasses
-              }`}
-            >
-              {LEAF_ICON}
-              <span>Plant-Based</span>
-            </button>
-            <button
-              onClick={() => handleFilterChange('cookieStroll')}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
-                filters.cookieStroll ? activeBtnClasses : inactiveBtnClasses
-              }`}
-            >
-              {COOKIE_ICON}
-              <span>Cookie Stroll</span>
-            </button>
-            <button
-              onClick={() => handleFilterChange('glutenFree')}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
-                filters.glutenFree ? activeBtnClasses : inactiveBtnClasses
-              }`}
-            >
-              {GLUTEN_FREE_ICON}
-              <span>Gluten-Free</span>
-            </button>
-            <button
-              onClick={() => handleFilterChange('dairyFree')}
-              className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition ${
-                filters.dairyFree ? activeBtnClasses : inactiveBtnClasses
-              }`}
-            >
-              {DAIRY_FREE_ICON}
-              <span>Dairy-Free</span>
-            </button>
-          </div>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center flex-wrap gap-2">
+          <button
+            onClick={() => handleFilterChange('showFavorites')}
+            className={filters.showFavorites ? activeBtnClasses : inactiveBtnClasses}
+          >
+            {FAVORITE_ICON}
+            <span>Favorites</span>
+          </button>
+          <button
+            onClick={() => handleFilterChange('plantBased')}
+            className={filters.plantBased ? activeBtnClasses : inactiveBtnClasses}
+          >
+            {LEAF_ICON}
+            <span>Plant-Based</span>
+          </button>
+          <button
+            onClick={() => handleFilterChange('cookieStroll')}
+            className={filters.cookieStroll ? activeBtnClasses : inactiveBtnClasses}
+          >
+            {COOKIE_ICON}
+            <span>Cookie Stroll</span>
+          </button>
+          <button
+            onClick={() => handleFilterChange('glutenFree')}
+            className={filters.glutenFree ? activeBtnClasses : inactiveBtnClasses}
+          >
+            {GLUTEN_FREE_ICON}
+            <span>Gluten-Free</span>
+          </button>
+          <button
+            onClick={() => handleFilterChange('dairyFree')}
+            className={filters.dairyFree ? activeBtnClasses : inactiveBtnClasses}
+          >
+            {DAIRY_FREE_ICON}
+            <span>Dairy-Free</span>
+          </button>
+        </div>
 
-          <div className="flex items-center space-x-2">
-            <label htmlFor="sort-by" className="text-sm text-[#D1C4A8]">Sort By:</label>
-            <select
-              id="sort-by"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-[#024933] border border-[#B91C1C] rounded-md px-3 py-2 text-sm text-white focus:ring-2 focus:ring-[#FFD700] focus:border-[#FFD700] transition"
-            >
-              <option value="name">Name</option>
-              <option value="location">Location</option>
-              <option value="carbs_low_high">Carbs (Low-High)</option>
-              <option value="carbs_high_low">Carbs (High-Low)</option>
-            </select>
-          </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="sort-by" className="text-sm text-[#D1E7D4]">Sort by</label>
+          <select
+            id="sort-by"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="bg-[#0F2D22] border border-[#1F4E38] rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-[#FBBF24] focus:border-[#FBBF24] transition"
+          >
+            <option value="name">Name</option>
+            <option value="location">Location</option>
+            <option value="carbs_low_high">Carbs (Low-High)</option>
+            <option value="carbs_high_low">Carbs (High-Low)</option>
+          </select>
         </div>
       </div>
-      <p className="text-center text-sm text-[#A89C8C] mt-3">Showing {itemCount} matching items.</p>
-    </div>
+    </section>
   );
 };
 
