@@ -141,6 +141,10 @@ const App: React.FC = () => {
 
         <div className="grid lg:grid-cols-[320px,1fr] gap-6 items-start">
           <div className="space-y-4 lg:sticky lg:top-6">
+        <Snowfall />
+        <main className="container mx-auto px-4 py-8 relative z-10 space-y-8">
+            <Header />
+            <GeminiPlanner />
             <FilterControls
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
