@@ -135,39 +135,48 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen font-sans bg-[#0B241B] text-white">
+      <Snowfall />
+      <main className="container mx-auto px-4 py-8 relative z-10 space-y-6">
+        <Header />
+
+        <div className="grid lg:grid-cols-[320px,1fr] gap-6 items-start">
+          <div className="space-y-4 lg:sticky lg:top-6">
         <Snowfall />
         <main className="container mx-auto px-4 py-8 relative z-10 space-y-8">
             <Header />
             <GeminiPlanner />
             <FilterControls
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filters={filters}
-                setFilters={setFilters}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                itemCount={totalItemCount}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filters={filters}
+              setFilters={setFilters}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              itemCount={totalItemCount}
             />
-            
-            {filteredKitchens.length > 0 ? (
-                <div>
-                    {filteredKitchens.map((kitchen) => (
-                        <KitchenCard 
-                          key={kitchen.kitchenName} 
-                          kitchen={kitchen} 
-                          favorites={favorites}
-                          onToggleFavorite={toggleFavorite}
-                        />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-16">
-                    <h3 className="text-2xl font-semibold text-[#F3E5AB]">No Matching Items Found</h3>
-                    <p className="text-[#A89C8C] mt-2">Try adjusting your search or filter criteria.</p>
+            <GeminiPlanner />
+          </div>
 
-                </div>
-            )}
-        </main>
+          {filteredKitchens.length > 0 ? (
+            <div className="space-y-4">
+              {filteredKitchens.map((kitchen) => (
+                <KitchenCard
+                  key={kitchen.kitchenName}
+                  kitchen={kitchen}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 lg:col-span-2">
+              <h3 className="text-2xl font-semibold text-[#F3E5AB]">No Matching Items Found</h3>
+              <p className="text-[#A89C8C] mt-2">Try adjusting your search or filter criteria.</p>
+
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
